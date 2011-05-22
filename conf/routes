@@ -1,4 +1,4 @@
-GET    cache.manifest            Pages.cacheManifest
+GET    /cache.manifest           Pages.cacheManifest
 GET    /                         Pages.list
 GET    /notes/{<[0-9]+>id}       Pages.detail 
 GET    /notes/new                Pages.detail 
