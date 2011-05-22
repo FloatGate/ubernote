@@ -10,7 +10,7 @@ Example code for an upcoming blog post.
 
 Install the Play! framework as explained [here](http://www.playframework.org/documentation/1.2.1/guide1#aInstallingthePlayframeworka).
 
-To run the application, type `play run` in the application's root directory.
+To run the application, type `play run --%prod` in the application's root directory.
 
 To run the unit tests, type `play test`, navigate to http://localhost:9000/@test and click the 'Run all' link.
 
