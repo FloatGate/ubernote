@@ -1,0 +1,23 @@
+#{extends 'test/AbstractTest.html' /}
+
+#{set dataFile: 'moreNotes.yml'/}
+
+#{selenium}
+    open('/')
+	waitForCondition('var w = selenium.browserbot.getCurrentWindow(); w.jQuery && w.jQuery.active == 0', 2000)
+	assertTextPresent('12 notes sync\'ed')
+    assertTextPresent('note 1')
+    assertTextPresent('note 10')
+    assertAttribute('previousPage@style', 'display: none;*')
+    assertAttribute('nextPage@style', 'display: inline;*')
+    
+    click('nextPage')
+    assertTextPresent('note 11')
+    assertTextPresent('note 12')
+    assertAttribute('previousPage@style', 'display: inline;*')
+    assertAttribute('nextPage@style', 'display: none;*')
+
+    click('previousPage')
+    assertTextPresent('note 1')
+    assertTextPresent('note 10')
+#{/selenium}

@@ -1,0 +1,31 @@
+#{extends 'main.html' /}
+
+#{set 'moreScripts'}
+	<script type="text/javascript">
+		window.loadAction = #{jsAction @Ajax.byId(':id') /};
+		window.saveAction = #{jsAction @Ajax.save() /};
+	</script>
+	<script src="@{'/public/javascripts/detail.js'}" type="text/javascript" charset="utf-8"></script>
+#{/set}
+
+<span id="errors"></span>
+<form id="noteData">
+	<input id="id" type="hidden"/>
+	<input id="localId" type="hidden"/>
+	<fieldset>
+	<ol>
+	<li>
+		<label for="name">Name</label>
+		<input id="name" type="text"/> 
+	</li>
+	<li>
+		<label for="contents">Contents</label>
+		<textarea id="contents" rows="5" cols="40"></textarea> 
+	</li>
+	</ol>
+	</fieldset>
+	<fieldset>
+		<input id="save" type="submit" value="Save"/>
+		<input id="cancel" type="button" value="Back"/>
+	</fieldset>
+</form>

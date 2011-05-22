@@ -1,0 +1,44 @@
+#{extends 'test/AbstractTest.html' /}
+
+#{selenium}
+    open('/')
+	waitForCondition('var w = selenium.browserbot.getCurrentWindow(); w.jQuery && w.jQuery.active == 0', 2000)
+	
+	// Simulate loss of connectivity
+	open('/Test/disableAjax')	
+    open('/')
+	waitForCondition('var w = selenium.browserbot.getCurrentWindow(); w.jQuery && w.jQuery.active == 0', 2000)
+	
+	clickAndWait('new')
+	waitForCondition('var w = selenium.browserbot.getCurrentWindow(); w.jQuery && w.jQuery.active == 0', 2000)
+	
+	assertValue('name', '')
+	assertValue('contents', '')
+	
+	type('name', 'note 4')
+	type('contents', 'note 4 contents')
+	clickAndWait('save')
+	
+	// Back to list
+	assertTextPresent('note 4')
+	
+	clickAndWait('link=note 4')
+	waitForCondition('var w = selenium.browserbot.getCurrentWindow(); w.jQuery && w.jQuery.active == 0', 2000)
+	assertValue('name', 'note 4')
+	assertValue('contents', 'note 4 contents')
+	
+	// Client is offline => note not saved on server
+	open('/Test/showServerNote?name=note 4')
+	assertTextPresent('not found')
+
+	// Restore connectivity, home page triggers a sync
+	open('/Test/enableAjax')
+    open('/')
+	waitForCondition('var w = selenium.browserbot.getCurrentWindow(); w.jQuery && w.jQuery.active == 0', 2000)
+	
+	// The note should now exist on the server
+	open('/Test/showServerNote?name=note 4')
+	assertTextPresent('name=note 4')
+	assertTextPresent('contents=note 4 contents')
+#{/selenium}
+	

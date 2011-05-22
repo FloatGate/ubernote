@@ -1,0 +1,12 @@
+.*
+!.gitignore
+
+db
+eclipse
+log
+logs
+tmp
+test-result
+eclipse
+server.pid
+precompiled

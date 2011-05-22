@@ -1,0 +1,26 @@
+#{extends 'test/AbstractTest.html' /}
+
+#{selenium}
+    open('/')
+	waitForCondition('var w = selenium.browserbot.getCurrentWindow(); w.jQuery && w.jQuery.active == 0', 2000)
+	
+	clickAndWait('link=note 1')
+	waitForCondition('var w = selenium.browserbot.getCurrentWindow(); w.jQuery && w.jQuery.active == 0', 2000)
+	
+	assertValue('name', 'note 1')
+	assertValue('contents', 'note 1 contents')
+	
+	type('name', 'note 1 new')
+	type('contents', 'note 1 new contents')
+	clickAndWait('save')
+	
+	// Back to list
+	assertTextPresent('note 1 new')
+	
+	// Go back to the detail page to check the fields
+	clickAndWait('link=note 1 new')
+	waitForCondition('var w = selenium.browserbot.getCurrentWindow(); w.jQuery && w.jQuery.active == 0', 2000)
+	assertValue('name', 'note 1 new')
+	assertValue('contents', 'note 1 new contents')
+#{/selenium}
+	

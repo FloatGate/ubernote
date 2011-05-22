@@ -1,0 +1,32 @@
+#{extends 'main.html' /}
+#{set manifest: play.mvc.Router.reverse('Pages.cacheManifest').url /}
+
+#{set 'moreScripts'}
+	<script type="text/javascript">
+		window.syncAction = #{jsAction @Ajax.sync() /};
+		window.noteAction = #{jsAction @Pages.detail(':id') /}
+		window.localNoteAction = #{jsAction @Pages.localDetail(':id') /}
+	</script>
+	<script src="@{'/public/javascripts/list.js'}" type="text/javascript" charset="utf-8"></script>
+#{/set}
+
+<div id="list">
+	<table>
+		<thead>
+			<tr>
+				<td>Name</td>
+				<td>Date</td>
+				<td>Status</td>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<nav>
+		<a id="previousPage" href="">&#9664;</a>
+		<span id="pageNumber"></span>
+		<a id="nextPage" href="">&#9654;</a>
+		<a id="sync" class="button" href="">Sync</a>
+		<a id="new" class="button" href="@{Pages.detail}">New</a>
+	</nav>
+</div>

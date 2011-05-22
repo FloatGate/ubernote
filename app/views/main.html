@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<html #{if (manifest)}manifest="${manifest}"#{/if}>
+    <head>
+        <title>Ubernote</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/main.css'}">
+        #{get 'moreStyles' /}
+        <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
+        <script src="@{'/public/javascripts/jquery-1.5.2.min.js'}" type="text/javascript" charset="utf-8"></script>
+        <script src="@{'/public/javascripts/common.js'}" type="text/javascript" charset="utf-8"></script>
+        #{get 'moreScripts' /}
+    </head>
+    <body>
+        <div id="browser_support">
+        	<h1>Oops...</h1>
+        	It appears that your browser is too old. To use this application, it must support:
+        	<ul>
+				<li>local storage: <span id="localStorage"></span>;</li>
+				<li>offline web applications: <span id="offline"></span>.</li>
+			</ul>
+        </div>
+        <div id="container">
+	        <div id="body">
+	        #{doLayout /}
+	        </div>
+	        <div id="logs"></div>
+        </div>
+    </body>
+</html>

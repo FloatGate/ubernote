@@ -1,0 +1,19 @@
+GET    cache.manifest            Pages.cacheManifest
+GET    /                         Pages.list
+GET    /notes/{<[0-9]+>id}       Pages.detail 
+GET    /notes/new                Pages.detail 
+GET    /localNotes/{<[0-9]+>id}  Pages.localDetail 
+GET    /offline/detail           Pages.detail
+
+GET    /data/notes/{<[0-9]+>id}  Ajax.byId
+POST   /data/notes               Ajax.save
+POST   /data/notes/sync          Ajax.sync
+
+# Ignore favicon requests
+GET    /favicon.ico              404
+
+# Map static resources from the /app/public folder to the /public path
+GET    /public/                  staticDir:public
+
+# Catch all
+*      /{controller}/{action}    {controller}.{action}

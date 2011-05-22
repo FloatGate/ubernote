@@ -1,0 +1,128 @@
+html,
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	height: 100%;
+}
+
+#browser_support {
+	position: absolute;
+	width: 100%;
+	margin-top: 0;
+	z-index: 10;
+	background-color: #fee;
+	opacity: 0.9;
+	display: none;
+}
+
+#container {
+	min-height: 100%;
+	position: relative;
+}
+
+#body {
+	padding: 10px;
+	padding-bottom: 200px; /* Height of the logs */
+}
+
+#logs {
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+	height: 200px;
+	overflow: scroll;
+	
+	background-color: black;
+	font-family: monospace;
+}
+
+.timeLog {
+	float: left;
+	clear: left;
+	color: lightgray;
+	margin-right: 1em;
+}
+.infoLog {
+	float: left;
+	color: lightgreen;
+}
+.warnLog {
+	float: left;
+	color: orange;
+}
+.errorLog {
+	float: left;
+	color: red;
+}
+
+#list {
+	float: left;
+}
+#list table {
+	border-collapse: collapse;
+}
+#list table thead td {
+	border: 1px solid #ACF;
+	margin: 0px;
+	padding: 5px 10px 5px 10px;
+	
+	font-weight: bold;
+	text-align: center;
+	color: #ACF;
+	background-color: #555;
+}
+#list table tbody td {
+	border: 1px solid #ACF;
+	margin: 0px;
+	padding: 5px 10px 5px 10px;
+}
+#list nav {
+	margin-top: 20px;
+	text-align: center;
+}
+#previousPage, #nextPage {
+	display: none;
+	text-decoration: none;
+	color: #ACF;
+}
+#previousPage:hover, #nextPage:hover {
+	color: #57F;
+}
+
+.button {
+	float: right;
+	padding: 2px 5px 2px 5px;
+	margin-left: 10px;
+	border: 1px outset #ACF;
+	background-color: #555;
+	
+	font-weight: bold;
+	text-align: center;
+	color: #ACF;
+	text-decoration: none;
+}
+.button:hover {
+	color: #57F;
+}
+
+fieldset {  
+	margin: 0;  
+	padding: 0;  
+	border: 0;
+}
+label {
+	display: block;
+	margin-top: 10px;
+}
+ol {
+	list-style: none;
+	padding: 0;
+}
+li {
+	padding: 0;
+}
+#errors {
+	color: red;
+	font-weight: bold;
+}

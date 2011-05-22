@@ -1,0 +1,23 @@
+CACHE MANIFEST
+
+# ${timestamp}
+
+NETWORK:
+/notes/*
+/localNotes/*
+
+/data/notes/*
+
+FALLBACK:
+/notes/ /offline/detail
+/localNotes/ /offline/detail
+
+CACHE:
+/public/stylesheets/main.css
+		
+/public/images/favicon.png
+        
+/public/javascripts/jquery-1.5.2.min.js
+/public/javascripts/common.js
+/public/javascripts/list.js
+/public/javascripts/detail.js

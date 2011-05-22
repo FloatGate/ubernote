@@ -1,0 +1,19 @@
+*{ Factors common parts of all Selenium tests. }*
+
+%{if (!dataFile) dataFile = 'notes.yml'}%
+#{fixture delete:'all', load:dataFile /}
+
+#{selenium}
+	// In case another test failed and left ajax disabled:
+	open('/Test/enableAjax')
+
+	// Make sure we're not testing a stale version stored in the offline cache:
+    open('/Test/touchCacheManifest')
+    openAndWait('/')
+	waitForCondition('var w = selenium.browserbot.getCurrentWindow(); w.jQuery && w.jQuery.active == 0', 2000)
+    
+	open('/Test/clearLocalStorage')
+	waitForTextPresent('Cleared local storage', 2000)
+#{/selenium}
+
+#{doLayout /}
