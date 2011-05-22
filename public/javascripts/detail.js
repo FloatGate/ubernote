@@ -38,7 +38,9 @@ $(document).ready(function() {
 			$.post(window.saveAction(), formData,
 				function(serverNote) {
 					window.noteStore.put(serverNote);
-					history.go(-1);
+					// Delete stale local data:
+					if (!formData.id) window.noteStore.deleteLocal(formData.localId);
+					window.location.href = '/';
 				}
 			).error(function() {
 				log.error('Error sending note to server! Will save locally');

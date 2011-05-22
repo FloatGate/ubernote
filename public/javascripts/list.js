@@ -5,7 +5,7 @@ $(document).ready(function() {
 	var lastPage;
 	
 	var byId = function(n1, n2) { return n1.id - n2.id }; // NB: this will not overflow
-	var byDate = function(n1, n2) { return n1.lastModified - n2.lastModified; }
+	var byDateDesc = function(n1, n2) { return n2.lastModified - n1.lastModified; }
 	
 	var renderNote = function(note) {
 		var ms = note.lastModified;
@@ -13,12 +13,10 @@ $(document).ready(function() {
 		var ts = d.toLocaleDateString() + " " + d.toLocaleTimeString();
 		
 		var status;
-		if (note.overwritten) {
-			status = 'Up-to-date (overwritten with server version)';
-		} else if (note.clientLastModified && note.clientLastModified > note.lastModified) {
-			status = 'Modified locally';
-		} else {
+		if (note.id) {
 			status = 'Up-to-date';
+		} else {
+			status = 'Locally created, waiting for sync'
 		}
 		
 		var link = note.id ? window.noteAction({id: note.id}) : window.localNoteAction({id: note.localId});
@@ -83,7 +81,8 @@ $(document).ready(function() {
 					var del = (j < localNotes.length && localNotes[j].id == note.id) ? 1 : 0;
 					localNotes.splice(j, del, note);
 				}
-				localNotes.sort(byDate);
+				for (i = 0; i < created.length; i++) window.noteStore.deleteLocal(created[i].localId);
+				localNotes.sort(byDateDesc);
 				renderList();
 			}
 		).error(function() {

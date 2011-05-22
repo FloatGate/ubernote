@@ -40,5 +40,11 @@
 	open('/Test/showServerNote?name=note 4')
 	assertTextPresent('name=note 4')
 	assertTextPresent('contents=note 4 contents')
+
+	// Restore connectivity, home page triggers a sync
+    open('/')
+    
+    // Check bug where local notes were not deleted properly
+    verifyXpathCount('//tbody/tr', 4)
 #{/selenium}
 	
