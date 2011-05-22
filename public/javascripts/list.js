@@ -4,7 +4,12 @@ $(document).ready(function() {
 	var localNotes;
 	var lastPage;
 	
-	var byId = function(n1, n2) { return n1.id - n2.id }; // NB: this will not overflow
+	var byId = function(n1, n2) {
+		if (n1.id && n2.id) return n1.id - n2.id; // NB: this will not overflow
+		else if (n1.localId && n2.localId) return n1.localId - n2.localId;
+		else if (n1.id) return -1;
+		else return 1;
+	}; 
 	var byDateDesc = function(n1, n2) { return n2.lastModified - n1.lastModified; }
 	
 	var renderNote = function(note) {
@@ -31,6 +36,8 @@ $(document).ready(function() {
 	};
 	
 	var renderList = function() {
+		localNotes.sort(byDateDesc);
+
 		$('#list>table>tbody').children().remove();
 		var from = (page - 1) * notesPerPage;
 		var to = Math.min(from + notesPerPage, localNotes.length);
@@ -51,12 +58,12 @@ $(document).ready(function() {
 		localNotes.sort(byId);
 		
 		var lastSync = window.noteStore.lastSync();
+		var created = [];
+		var updated = [];
 		
-		created = [];
-		updated = [];
 		for (var i = 0; i < localNotes.length; i++) {
 			var note = localNotes[i];
-			if (note.id == null) created.push(note);
+			if (!note.id) created.push(note);
 			else if (note.lastModified > lastSync) updated.push(note);
 		}
 	
@@ -73,16 +80,25 @@ $(document).ready(function() {
 				store.setLastSync(beforeRequest);
 				store.put(syncedNotes);
 				
-				// Update in-memory list
+				// Handle notes that were pending server-side creation
+				var i, note;
+				for (i = 0; i < localNotes.length; i++) {
+					note = localNotes[i];
+					if (!note.id) {
+						window.noteStore.deleteLocal(note.localId);
+						localNotes.splice(i, 1);
+						i -= 1;
+					}
+				}
+				// Re-insert notes returned by server
 				var j = 0;
-				for (var i = 0; i < syncedNotes.length; i++) {
-					var note = syncedNotes[i];
+				for (i = 0; i < syncedNotes.length; i++) {
+					note = syncedNotes[i];
 					while (j < localNotes.length && localNotes[j].id < note.id) j += 1;
 					var del = (j < localNotes.length && localNotes[j].id == note.id) ? 1 : 0;
 					localNotes.splice(j, del, note);
 				}
 				for (i = 0; i < created.length; i++) window.noteStore.deleteLocal(created[i].localId);
-				localNotes.sort(byDateDesc);
 				renderList();
 			}
 		).error(function() {
