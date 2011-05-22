@@ -44,6 +44,7 @@ $(document).ready(function() {
 				}
 			).error(function() {
 				log.error('Error sending note to server! Will save locally');
+				formData.locallyModified = true;
 				window.noteStore.put(formData);
 				window.location.href = '/';
 			});

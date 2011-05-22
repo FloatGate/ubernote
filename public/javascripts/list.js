@@ -18,11 +18,9 @@ $(document).ready(function() {
 		var ts = d.toLocaleDateString() + " " + d.toLocaleTimeString();
 		
 		var status;
-		if (note.id) {
-			status = 'Up-to-date';
-		} else {
-			status = 'Locally created, waiting for sync'
-		}
+		if (!note.id) status = 'Locally created';
+		else if (note.locallyModified) status = 'Locally modified';
+		else status = 'Up-to-date';
 		
 		var link = note.id ? window.noteAction({id: note.id}) : window.localNoteAction({id: note.localId});
 		
