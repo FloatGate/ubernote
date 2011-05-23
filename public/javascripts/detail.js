@@ -20,7 +20,10 @@ $(document).ready(function() {
 		
 		var ts =  new Date().getTime();
 		note.lastModified = ts;
-		if (!note.id && !note.localId) note.localId = ts;
+		if (!note.id && !note.localId) {
+			note.localId = ts;
+			note.locallyCreated = true;
+		}
 		return note;
 	};
 	
@@ -39,7 +42,7 @@ $(document).ready(function() {
 				function(serverNote) {
 					window.noteStore.put(serverNote);
 					// Delete stale local data:
-					if (!formData.id) window.noteStore.deleteLocal(formData.localId);
+					if (formData.locallyCreated) window.noteStore.deleteLocal(formData.localId);
 					window.location.href = '/';
 				}
 			).error(function() {
