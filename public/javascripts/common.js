@@ -72,21 +72,29 @@ $(document).ready(function() {
 			var stored = localStorage.getItem(key);
 			if (stored) return JSON.parse(stored);
 		};
+		var find = function(filter) { return function() {
+			var notes = [];
+			for (var i = 0; i < s.length; i++) {
+				var key = s.key(i);
+				if (key.indexOf(prefix) != 0) continue;
+				var note = getByKey(key);
+				if (filter(note)) notes.push(note);
+			}
+			return notes;
+		};};
 		
 		var lastSync = s.getItem('lastSync') || 0;
 		
 		return {
 			get: function(id) {	return getByKey(prefix + id); },
 			getLocal: function(id) { return getByKey(localPrefix + id); },
-			deleteLocal: function(id) { s.removeItem(localPrefix + id); },
-			getAll: function() {
-				var notes = [];
-				for (var i = 0; i < s.length; i++) {
-					var key = s.key(i);
-					if (key.indexOf(prefix) != 0) continue;
-					notes.push(getByKey(key));
-				}
-				return notes;
+			remove: function(id) { s.removeItem(prefix + id); },
+			removeLocal: function(id) { s.removeItem(localPrefix + id); },
+			findVisible: find(function(note) { return !note.locallyDeleted; }),
+			findLocallyCreated: find(function(note) { return !note.id; }),
+			findUpdatedSince: function (ts) {
+				var filter = function(note) { return note.id && note.lastModified > ts };
+				return find(filter)();
 			},
 			// Saves a single note or an array of notes
 			put: function(o) {

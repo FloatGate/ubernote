@@ -10,4 +10,7 @@ Note(3):
   name: note 3
   contents: note 3 contents
 
- 
+Note(666):
+  name: note 666
+  contents: this should not appear
+  archived: true

@@ -4,8 +4,10 @@
 #{set 'moreScripts'}
 	<script type="text/javascript">
 		window.syncAction = #{jsAction @Ajax.sync() /};
-		window.noteAction = #{jsAction @Pages.detail(':id') /}
-		window.localNoteAction = #{jsAction @Pages.localDetail(':id') /}
+		window.removeAction = #{jsAction @Ajax.remove(':id') /};
+		
+		window.noteAction = #{jsAction @Pages.detail(':id') /};
+		window.localNoteAction = #{jsAction @Pages.localDetail(':id') /};
 	</script>
 	<script src="@{'/public/javascripts/list.js'}" type="text/javascript" charset="utf-8"></script>
 #{/set}
@@ -17,6 +19,7 @@
 				<td>Name</td>
 				<td>Date</td>
 				<td>Status</td>
+				<td></td>
 			</tr>
 		</thead>
 		<tbody>

@@ -1,15 +1,10 @@
 $(document).ready(function() {
+	var store = window.noteStore;
 	var notesPerPage = 10;
 	var page = 1;
-	var localNotes;
+	var renderedNotes;
 	var lastPage;
 	
-	var byId = function(n1, n2) {
-		if (n1.id && n2.id) return n1.id - n2.id; // NB: this will not overflow
-		else if (n1.localId && n2.localId) return n1.localId - n2.localId;
-		else if (n1.id) return -1;
-		else return 1;
-	}; 
 	var byDateDesc = function(n1, n2) { return n2.lastModified - n1.lastModified; }
 	
 	var renderNote = function(note) {
@@ -22,50 +17,92 @@ $(document).ready(function() {
 		else if (note.locallyModified) status = 'Locally modified';
 		else status = 'Up-to-date';
 		
-		var link = note.id ? window.noteAction({id: note.id}) : window.localNoteAction({id: note.localId});
+		var link, removeButton;
+		if (note.locallyCreated) {
+			link = window.localNoteAction({id: note.localId});
+			removeButton = $('<input type="button" class="removeLocally" value="Remove">').attr("id", note.localId);
+		} else {
+			link = window.noteAction({id: note.id});
+			removeButton = $('<input type="button" class="remove" value="Remove">').attr("id", note.id);
+		}
 		
 		$('#list>table>tbody').append(
 			$('<tr></tr>').append(
 				$('<td></td>').append($('<a></a>').attr('href', link).text(note.name)),
 				$('<td></td>').text(ts),
-				$('<td></td>').text(status)
+				$('<td></td>').text(status),
+				$('<td></td>').append(removeButton)
 			)
 		);
 	};
 	
+	// never sent to server => can remove directly
+	var removeLocally = function() {
+		var localId = $(this).attr('id');
+		for (var i = 0; i < renderedNotes.length; i++)
+			if (renderedNotes[i].localId == localId) renderedNotes.splice(i, 1);
+		store.removeLocal(localId);
+		renderList();
+	};
+	
+	// needs sync with server, possibly storing locally until back online
+	var remove = function() {
+		var id = $(this).attr('id');
+		$.ajax({
+			url: window.removeAction({id: id}),
+			type: 'DELETE',
+			success: function() {
+				for (var i = 0; i < renderedNotes.length; i++)
+					if (renderedNotes[i].id == id) renderedNotes.splice(i, 1);
+				store.remove(id);
+				renderList();
+			}
+		}).error(function() {
+			var note;
+			for (var i = 0; i < renderedNotes.length; i++)
+				if (renderedNotes[i].id == id) {
+					note = renderedNotes.splice(i, 1)[0];
+					break;
+				}
+			note.archived = true;
+			note.lastModified = new Date().getTime();
+			store.put(note);
+			renderList();
+		});
+	};
+	
 	var renderList = function() {
-		localNotes.sort(byDateDesc);
+		renderedNotes.sort(byDateDesc);
 
 		$('#list>table>tbody').children().remove();
 		var from = (page - 1) * notesPerPage;
-		var to = Math.min(from + notesPerPage, localNotes.length);
-		for (var i = from; i < to; i++) renderNote(localNotes[i]);
+		var to = Math.min(from + notesPerPage, renderedNotes.length);
+		for (var i = from; i < to; i++) renderNote(renderedNotes[i]);
 		
 		$('#pageNumber').text('Page ' + page);
 		
 		if (page > 1) $('#previousPage').show();
 		else $('#previousPage').hide();
 		
-		lastPage = Math.ceil(localNotes.length / notesPerPage);
+		lastPage = Math.ceil(renderedNotes.length / notesPerPage);
 		if (page < lastPage) $('#nextPage').show();
 		else $('#nextPage').hide();
+		
+		$('.removeLocally').click(removeLocally);
+		
+		$('.remove').click(remove);
+		
 		window.notesRendered = true;
 	};
 	
 	var sync = function() {
-		localNotes.sort(byId);
-		
-		var lastSync = window.noteStore.lastSync();
-		var created = [];
-		var updated = [];
-		
-		for (var i = 0; i < localNotes.length; i++) {
-			var note = localNotes[i];
-			if (!note.id) created.push(note);
-			else if (note.lastModified > lastSync) updated.push(note);
-		}
+		var lastSync = store.lastSync();
 	
 		log.info('[sync] Synchronizing with server...');
+		
+		var created = store.findLocallyCreated();
+		var updated = store.findUpdatedSince(lastSync);
+		
 		var beforeRequest = new Date().getTime();
 		$.post(window.syncAction(),
 			{
@@ -76,27 +113,22 @@ $(document).ready(function() {
 			function(syncedNotes) {
 				log.info('[sync] ' + syncedNotes.length + ' notes sync\'ed.');
 				store.setLastSync(beforeRequest);
-				store.put(syncedNotes);
 				
-				// Handle notes that were pending server-side creation
-				var i, note;
-				for (i = 0; i < localNotes.length; i++) {
-					note = localNotes[i];
-					if (!note.id) {
-						window.noteStore.deleteLocal(note.localId);
-						localNotes.splice(i, 1);
-						i -= 1;
-					}
+				// Remove local notes that were pending server-side creation
+				for (i = 0; i < created.length; i++) {
+					note = created[i];
+					if (note.locallyCreated) store.removeLocal(note.localId);
 				}
-				// Re-insert notes returned by server
-				var j = 0;
+				
+				// Update store with returned notes
+				var i, note;
 				for (i = 0; i < syncedNotes.length; i++) {
 					note = syncedNotes[i];
-					while (j < localNotes.length && localNotes[j].id < note.id) j += 1;
-					var del = (j < localNotes.length && localNotes[j].id == note.id) ? 1 : 0;
-					localNotes.splice(j, del, note);
+					if (note.archived) store.remove(note.id);
+					else store.put(note);
 				}
-				for (i = 0; i < created.length; i++) window.noteStore.deleteLocal(created[i].localId);
+				
+				renderedNotes = store.findVisible();
 				renderList();
 			}
 		).error(function() {
@@ -122,8 +154,7 @@ $(document).ready(function() {
 		e.preventDefault();
 	});
 	
-	var store = window.noteStore;
-	localNotes = noteStore.getAll();
-	log.info('[sync] Loaded ' + localNotes.length + ' notes from local storage.');
+	renderedNotes = store.findVisible();
+	log.info('[sync] Loaded ' + renderedNotes.length + ' notes from local storage.');
 	sync();
 });

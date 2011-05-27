@@ -120,12 +120,13 @@ public class AjaxTest extends FunctionalTest {
 
 		// Then
 		List<Note> results = parseNotes(response);
-		assertEquals(3, results.size());
+		assertEquals(4, results.size());
 		Collections.sort(results, BY_ID);
 		Iterator<Note> it = results.iterator();
 		assertEquals("note 1", it.next().name);
 		assertEquals("note 2", it.next().name);
 		assertEquals("note 3", it.next().name);
+		assertEquals("note 666", it.next().name);
 	}
 
 	@Test
@@ -174,6 +175,20 @@ public class AjaxTest extends FunctionalTest {
 		dbNote1.refresh();
 		assertEquals("note 1 new name", dbNote1.name);
 		assertEquals("note 1 new contents", dbNote1.contents);
+	}
+
+	@Test
+	public void testRemove() {
+		// Given
+		Note dbNote1 = loadNote(1);
+
+		// When
+		Response response = DELETE("/data/notes/" + dbNote1.id);
+
+		// Then
+		assertIsOk(response);
+		dbNote1.refresh();
+		assertTrue(dbNote1.archived);
 	}
 
 	private static final Gson GSON = new Gson();

@@ -52,6 +52,17 @@ public class Ajax extends Controller {
 		persisted.save(); // Play makes save explicit !
 		renderJSON(persisted);
 	}
+	
+	public static void remove(Long id) {
+		Note note = Note.findById(id);
+		if (note == null)
+			notFound();
+		else {
+			note.archived = true;
+			note.save();
+			renderText("");
+		}
+	}
 
 	public static void sync(Long lastSync, String created, String updated) {
 		Logger.debug("sync(lastSync=%s, created=%s, updated=%s)", lastSync,

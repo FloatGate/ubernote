@@ -47,7 +47,8 @@ public class Test extends Controller {
 		if (note == null)
 			renderText("not found");
 		else
-			renderText("name=" + note.name + "\ncontents=" + note.contents);
+			renderText("name=" + note.name + "\ncontents=" + note.contents
+					+ "\narchived=" + note.archived);
 	}
 
 	public static void touchServerNote(String name) {

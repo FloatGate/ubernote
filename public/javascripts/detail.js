@@ -18,12 +18,7 @@ $(document).ready(function() {
 		readField('name', note);
 		readField('contents', note);
 		
-		var ts =  new Date().getTime();
-		note.lastModified = ts;
-		if (!note.id && !note.localId) {
-			note.localId = ts;
-			note.locallyCreated = true;
-		}
+		note.lastModified = new Date().getTime();
 		return note;
 	};
 	
@@ -33,22 +28,27 @@ $(document).ready(function() {
 	};
 	
 	var save = function() {
-		var formData = readForm();
-		if (!formData.name || !formData.contents) {
+		var typedNote = readForm();
+		if (!typedNote.name || !typedNote.contents) {
 			$('#errors').text('All fields are mandatory.');
 		} else {
 			$('#errors').text('');
-			$.post(window.saveAction(), formData,
+			$.post(window.saveAction(), typedNote,
 				function(serverNote) {
 					window.noteStore.put(serverNote);
 					// Delete stale local data:
-					if (formData.locallyCreated) window.noteStore.deleteLocal(formData.localId);
+					if (typedNote.locallyCreated) window.noteStore.removeLocal(typedNote.localId);
 					window.location.href = '/';
 				}
 			).error(function() {
 				log.error('Error sending note to server! Will save locally');
-				formData.locallyModified = true;
-				window.noteStore.put(formData);
+				if (typedNote.id)
+					typedNote.locallyModified = true;
+				else {
+					typedNote.locallyCreated = true;
+					typedNote.localId = typedNote.lastModified;
+				}
+				window.noteStore.put(typedNote);
 				window.location.href = '/';
 			});
 		}
@@ -83,7 +83,8 @@ $(document).ready(function() {
 		}
 	} else if (where == 'localNotes') {
 		log.info('Editing note with local id ' + id);
-		var note = window.noteStore.getLocal(id);
-		fillForm(note);
+		var localNote = window.noteStore.getLocal(id);
+		if (localNote) fillForm(localNote);
+		else notFound();
 	}
 });
