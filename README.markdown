@@ -2,7 +2,7 @@ Example code for an upcoming blog post.
 
 ## Browser support
 
-* Chrome: all tests pass, but I sometimes get random errors in the Selenium tests (where the DOM elements seem to be uninitialized, although I'm waiting for JQuery to finish executing) ;
+* Chrome: all tests pass, but I get random errors in the Selenium tests (where DOM elements seem to be uninitialized). Any thought welcome ;
 * Safari: same as Chrome, but the errors happen much more often;
 * Firefox: offline mode doesn't work, due to a different behavior with cached resources (I will explain this better in the post).
 
