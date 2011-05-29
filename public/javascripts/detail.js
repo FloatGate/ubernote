@@ -1,4 +1,5 @@
 $(document).ready(function() {
+	
 	var fillForm = function(note) {
 		if (note.id) $('#id').val(note.id);
 		if (note.localId) $('#name').val(note.localId);
@@ -59,6 +60,7 @@ $(document).ready(function() {
 		e.preventDefault();
 	});
 	$('#cancel').click(function() { window.location.href = '/' });
+	
 	
 	var parts = window.location.pathname.split('/');
 	var where = parts[1];

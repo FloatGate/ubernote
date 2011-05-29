@@ -28,6 +28,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class Ajax extends Controller {
+	/** @see Test#disableAjax() */
 	@Before
 	public static void testHook() {
 		if (Play.mode == DEV && Cache.get(Test.AJAX_DISABLED) == Boolean.TRUE)
@@ -41,18 +42,18 @@ public class Ajax extends Controller {
 		else
 			renderJSON(note);
 	}
-	
+
 	public static void save(Long id, String name, String contents) {
 		Note received = new Note();
 		received.id = id;
 		received.name = name;
 		received.contents = contents;
-		
+
 		Note persisted = received.merge();
-		persisted.save(); // Play makes save explicit !
+		persisted.save(); // Play makes save explicit!
 		renderJSON(persisted);
 	}
-	
+
 	public static void remove(Long id) {
 		Note note = Note.findById(id);
 		if (note == null)

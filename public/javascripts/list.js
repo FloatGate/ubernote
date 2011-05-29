@@ -36,16 +36,19 @@ $(document).ready(function() {
 		);
 	};
 	
-	// never sent to server => can remove directly
+	// Removes a note that was never sent to the server
 	var removeLocally = function() {
 		var localId = $(this).attr('id');
 		for (var i = 0; i < renderedNotes.length; i++)
-			if (renderedNotes[i].localId == localId) renderedNotes.splice(i, 1);
+			if (renderedNotes[i].localId == localId) {
+				renderedNotes.splice(i, 1);
+				break;
+			}
 		store.removeLocal(localId);
 		renderList();
 	};
 	
-	// needs sync with server, possibly storing locally until back online
+	// Removes a note that was synchronized with the server at least once
 	var remove = function() {
 		var id = $(this).attr('id');
 		$.ajax({
@@ -53,7 +56,10 @@ $(document).ready(function() {
 			type: 'DELETE',
 			success: function() {
 				for (var i = 0; i < renderedNotes.length; i++)
-					if (renderedNotes[i].id == id) renderedNotes.splice(i, 1);
+					if (renderedNotes[i].id == id) {
+						renderedNotes.splice(i, 1);
+						break;
+					}
 				store.remove(id);
 				renderList();
 			}
@@ -89,10 +95,7 @@ $(document).ready(function() {
 		else $('#nextPage').hide();
 		
 		$('.removeLocally').click(removeLocally);
-		
 		$('.remove').click(remove);
-		
-		window.notesRendered = true;
 	};
 	
 	var sync = function() {

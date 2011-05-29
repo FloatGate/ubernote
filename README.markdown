@@ -1,10 +1,10 @@
-Example code for an upcoming blog post.
+Example code for my blog post http://out-println.appspot.com/posts/offline_example.
 
 ## Browser support
 
-* Chrome: all tests pass, but I get random errors in the Selenium tests (where DOM elements seem to be uninitialized). Any thought welcome ;
-* Safari: same as Chrome, but the errors happen much more often;
-* Firefox: offline mode doesn't work, due to a different behavior with cached resources (I will explain this better in the post).
+* Firefox: all tests pass. However, I've sometimes observed erratic behavior when testing manually: the offline cache stops updating, I have to clear it and restart the browser;
+* Chrome: all tests pass, but I get random errors in the Selenium tests (where DOM elements seem to be uninitialized) ;
+* Safari: same as Chrome, but the errors happen much more often.
 
 ## Running
 

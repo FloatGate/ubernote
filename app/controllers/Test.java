@@ -20,7 +20,7 @@ public class Test extends Controller {
 		render();
 	}
 
-	/** @see Pages#cache() */
+	/** @see Pages#cacheManifest() */
 	public static void touchCacheManifest() {
 		String ts = Long.toString(System.currentTimeMillis());
 		Cache.set(MANIFEST_TIMESTAMP, ts);

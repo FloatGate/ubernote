@@ -1,6 +1,7 @@
 $(document).ready(function() {
+	
 	window.log = function() {
-		var doLog = function(level) {
+		var print = function(level) {
 			var messageClass = level + 'Log';
 			return function(message) {
 				var time = new Date().toLocaleTimeString();
@@ -11,9 +12,9 @@ $(document).ready(function() {
 			};
 		};
 		return {
-			info: doLog('info'),
-			warn: doLog('warn'),
-			error: doLog('error')
+			info: print('info'),
+			warn: print('warn'),
+			error: print('error')
 		};
 	}();
 	
@@ -46,7 +47,7 @@ $(document).ready(function() {
 			log.info('[offline] Starting download of offline resources...');
 		})
 		.bind('progress', function() {
-			// Could not find any interesting info in the event on Firefox :-(
+			// Could not find any interesting info on the event in Firefox :-(
 			log.info('[offline] Downloading offline resources...');
 		})
 		.bind('cached', function() {
@@ -67,21 +68,23 @@ $(document).ready(function() {
 	window.noteStore = function() {
 		var s = window.localStorage;
 		var prefix = 'note_';
-		var localPrefix = 'note_local_';
+		var localPrefix = prefix + 'local_';
 		var getByKey = function(key) {
 			var stored = localStorage.getItem(key);
 			if (stored) return JSON.parse(stored);
 		};
-		var find = function(filter) { return function() {
-			var notes = [];
-			for (var i = 0; i < s.length; i++) {
-				var key = s.key(i);
-				if (key.indexOf(prefix) != 0) continue;
-				var note = getByKey(key);
-				if (filter(note)) notes.push(note);
-			}
-			return notes;
-		};};
+		var find = function(filter) {
+			return function() {
+				var notes = [];
+				for (var i = 0; i < s.length; i++) {
+					var key = s.key(i);
+					if (key.indexOf(prefix) != 0) continue;
+					var note = getByKey(key);
+					if (filter(note)) notes.push(note);
+				}
+				return notes;
+			};
+		};
 		
 		var lastSync = s.getItem('lastSync') || 0;
 		
